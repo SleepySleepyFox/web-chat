@@ -1,14 +1,11 @@
 import React from 'react'
-import Navigation from './components/Navigation'
-import Contacts from './components/Contacts'
-import Mobile from './components/Mobile'
+import Search from './components/Search'
 
 
 export default function App() {
   return (
-    <div>
-     <Navigation />
-     <Mobile />
+    <div className='px-2'>
+      <Search />
     </div>
   )
 }
