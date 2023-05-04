@@ -7,8 +7,12 @@ export default {
   theme: {
     extend: {
       colors:{
-        input: '#eeeeee'
-      }
+        input: '#eeeeee',
+        links: '#2D9CDB'
+      },
+      fontSize: {
+        xxs: '0.625rem'
+      },
     },
   },
   plugins: [],
