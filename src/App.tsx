@@ -6,10 +6,14 @@ import ChatRoom from './components/ChatRoom/ChatRoom'
 
 export default function App() {
   return (
-    <div>
-      {/* <Search />
-      <List /> */}
-      <ChatRoom/>
+    <div className='h-full'>
+      <div className="container md:flex">
+        <div>
+          <Search />
+          <List />
+        </div>
+        <ChatRoom/>
+      </div>
     </div>
   )
 }

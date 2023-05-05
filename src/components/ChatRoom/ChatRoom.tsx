@@ -5,10 +5,10 @@ import MessageList from './MessageList'
 
 export default function ChatRoom() {
   return (
-    <div className='flex flex-col justify-between max-h-screen'>
-      <ChatHeader/>
-      <MessageList/>
-      <ChatInput/>
+    <div className='container flex flex-col justify-between max-h-screen max-w-full lg:ml-5'>
+        <ChatHeader/>
+        <MessageList/>
+        <ChatInput/>
     </div>
   )
 }
