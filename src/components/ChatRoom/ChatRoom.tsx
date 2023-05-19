@@ -7,7 +7,7 @@ export default function ChatRoom() {
 
 
   return (
-    <div className='container flex flex-col justify-between max-h-screen max-w-full lg:ml-5'>
+    <div className='hidden w-full md:flex flex-col justify-between max-h-screen max-w-full lg:ml-5'>
         <ChatHeader/>
         <MessageList/>
         <ChatInput/>

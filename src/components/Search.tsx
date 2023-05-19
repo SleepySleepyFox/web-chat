@@ -22,10 +22,10 @@ export default function Search() {
         <Listbox value={sort} onChange={setSort}>
           <div>
             <Listbox.Button>
-              <span>{sort.sortBy}</span>
+              <span className='text-links text:sm'>{sort.sortBy}</span>
             </Listbox.Button>
 
-            <Listbox.Options className="absolute mt-1  w-28 h-28 overflow-auto rounded-md backdrop-blur-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Listbox.Options className="absolute left-10 mt-1 text-center  w-28 overflow-auto rounded-md backdrop-blur-md py-1 text-base shadow-lg ring-1 ring-gray-200 ring-opacity-5 focus:outline-none sm:text-sm">
               {options.map(e => (<Listbox.Option  value={e}>{e.sortBy}</Listbox.Option>))}
             </Listbox.Options> 
           </div>   
