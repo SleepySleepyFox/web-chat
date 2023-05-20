@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { auth } from "../firebase";
+import { auth, storage } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 export default function Auth() {
   const [userName, setUserName] = useState("");
@@ -11,14 +12,30 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [LogIn, setLogIn] = useState(false);
   const [error, setError] = useState(false);
+  const [pfp, setPfp] = useState<File>();
+
+  //TODO: Закончить загрузку и отображение картинки профиля firebase 
+  // DOCS LINK: https://firebase.google.com/docs/storage/web/upload-files
+  // LAST ERROR: permition denied code 403
 
   async function signUp() {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      setError(true);
-      console.log("SignUp Error: ", err);
-    }
+      if(pfp != undefined){
+            const storageRef = ref(storage, userName);
+            const uploadTask = uploadBytesResumable(storageRef, pfp );
+           () => {
+                getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                    await console.log('File available at', downloadURL);
+                  });
+            }
+
+        }
+
+    }catch (err) {
+        setError(true);
+        console.log("SignIn Error: ", err);
+      }
   }
 
   async function signIn() {
@@ -42,6 +59,7 @@ export default function Auth() {
             type="text"
             className="bg-gray-200 rounded-md p-2 outline-slate-400"
             placeholder="Username"
+            onChange={(e) => setUserName(e.target.value)}
           />
           <input
             type="email"
@@ -61,9 +79,25 @@ export default function Auth() {
               setError(false);
             }}
           />
-          <input type="file" id="file" className="hidden"/>
+          <input
+            type="file"
+            id="file"
+            className="hidden"
+            onChange={(e) => {
+              if (!e.target.files) {
+                return;
+              } else {
+                setPfp(e.target.files[0]);
+              }
+            }}
+          />
           <label htmlFor="file" className="flex gap-2 m-2">
-            <img width="24" height="24" src="https://img.icons8.com/pastel-glyph/64/0110100/image--v2.png" alt="image--v2"/>
+            <img
+              width="24"
+              height="24"
+              src="https://img.icons8.com/pastel-glyph/64/0110100/image--v2.png"
+              alt="image--v2"
+            />
             <span>add profile picture</span>
           </label>
           <button
