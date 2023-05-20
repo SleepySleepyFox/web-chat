@@ -1,10 +1,14 @@
 import React, { useState } from "react";
-import { auth, storage } from "../firebase";
+import { auth, storage, db } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateCurrentUser,
+  updateProfile,
 } from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore"; 
+
 
 export default function Auth() {
   const [userName, setUserName] = useState("");
@@ -14,28 +18,45 @@ export default function Auth() {
   const [error, setError] = useState(false);
   const [pfp, setPfp] = useState<File>();
 
-  //TODO: Закончить загрузку и отображение картинки профиля firebase 
-  // DOCS LINK: https://firebase.google.com/docs/storage/web/upload-files
-  // LAST ERROR: permition denied code 403
+
+  //TODO: Закончить загрузку и отображение картинки профиля firebase
+
+  // auth.currentUser != null && updateProfile(auth.currentUser, {
+  //   displayName: userName, 
+  //   photoURL: "https://example.com/jane-q-user/profile.jpg"
+  // }).then(() => {
+  //   console.log(auth.currentUser);
+  // })
 
   async function signUp() {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      if(pfp != undefined){
-            const storageRef = ref(storage, userName);
-            const uploadTask = uploadBytesResumable(storageRef, pfp );
-           () => {
-                getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                    await console.log('File available at', downloadURL);
-                  });
-            }
+      if (pfp != undefined) {
+        await createUserWithEmailAndPassword(auth, email, password);
+        
+        const storageRef = ref(storage, userName);
+        const uploadTask =  uploadBytesResumable(storageRef, pfp);
+        const addPfp = async () => {
+           await getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+             auth.currentUser != null && await updateProfile(auth.currentUser, {
+              displayName: userName, 
+              photoURL: downloadURL
+            })
 
-        }
+            await setDoc(doc(db, 'users', `${auth.currentUser?.uid}`), {
+              uEmail: auth.currentUser?.email,
+              uName: userName,
+              uID: auth.currentUser?.uid,
+              PhotoURL: downloadURL
+            })
+          });
+        };
+        addPfp()
 
-    }catch (err) {
-        setError(true);
-        console.log("SignIn Error: ", err);
-      }
+      }else{setError(true)}
+    } catch (err) {
+      setError(true);
+      console.log("SignIn Error: ", err);
+    }
   }
 
   async function signIn() {
@@ -46,7 +67,7 @@ export default function Auth() {
       console.log("SignIn Error: ", err);
     }
   }
-  //${error && 'border-red-400 border-2'}
+
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center">
       {!LogIn && (

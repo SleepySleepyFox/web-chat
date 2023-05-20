@@ -3,18 +3,26 @@ import Search from "./components/Search";
 import List from "./components/List/List";
 import ChatRoom from "./components/ChatRoom/ChatRoom";
 import Auth from "./components/Auth";
-
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "./firebase";
 export default function App() {
+  const [user] = useAuthState(auth);
+
   return (
+    // NOTE: Seatch.tsx - убрать math.random() из listItme
+    // 
     <div className="h-screen">
-      <div className="h-full md:flex">
-        <Auth/>
-        {/* <div>
-          <Search />
-          <List />
+      {!user ? (
+        <Auth />
+      ) : (
+        <div className="h-full md:flex">
+          <div>
+            <Search />
+            <List />
+          </div>
+          <ChatRoom />
         </div>
-        <ChatRoom /> */}
-      </div>
+      )}
     </div>
   );
 }
