@@ -19,15 +19,6 @@ export default function Auth() {
   const [pfp, setPfp] = useState<File>();
 
 
-  //TODO: Закончить загрузку и отображение картинки профиля firebase
-
-  // auth.currentUser != null && updateProfile(auth.currentUser, {
-  //   displayName: userName, 
-  //   photoURL: "https://example.com/jane-q-user/profile.jpg"
-  // }).then(() => {
-  //   console.log(auth.currentUser);
-  // })
-
   async function signUp() {
     try {
       if (pfp != undefined) {
@@ -49,9 +40,9 @@ export default function Auth() {
               PhotoURL: downloadURL
             })
           });
-        };
+        }
         addPfp()
-
+        console.log(auth.currentUser)
       }else{setError(true)}
     } catch (err) {
       setError(true);

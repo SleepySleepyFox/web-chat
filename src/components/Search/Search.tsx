@@ -1,9 +1,14 @@
 import { Listbox } from '@headlessui/react'
 import React, { useState } from 'react'
 import { signOut } from "firebase/auth";
-import { auth } from '../firebase';
+import { auth, db } from '../../firebase';
+import SearchFor from './SearchFor';
+import { collection, query, where, getDocs } from "firebase/firestore"
+import List from '../List/List';
 
 export default function Search() {
+  const [searchStastu, setSearchStatus] = useState(false)
+  const [getuser, setGetUser] = useState('')
   const options = [
     {sortBy: 'Newest'}, 
     {sortBy: 'Olderst'}]
@@ -16,13 +21,27 @@ export default function Search() {
      console.log('Sign Out Error: ', error)
     });
   }
+  
+//   async function getDocuments(){
+//     const querySnapshot = await getDocs(q);
+//     querySnapshot.forEach((doc) => {
+//   // doc.data() is never undefined for query doc snapshots
+//   console.log(doc.id, " => ", doc.data());
+// });
+//   }
+//   getDocuments() 
 
   return (
     <div className='container flex justify-center flex-col max-w-full px-2'>
         <h1 className='text-2xl font-semibold m-2' onClick={() => logOut()}>Messages</h1> 
         <div className="container flex justify-center items-center rounded-xl bg-input max-w-full">
           <img className='h-3 w-3 m-2' src="https://img.icons8.com/external-others-iconmarket/64/000000/external-reserch-e-commerce-others-iconmarket.png"/>
-          <input className=' rounded-xl w-full bg-transparent outline-none'/>
+          <input 
+          className=' rounded-xl w-full bg-transparent outline-none'
+          onFocus={() => setSearchStatus(e => !e)}
+          onBlur={() => setSearchStatus(e => !e)}
+         onChange={(e) => setGetUser(e.target.value)}
+          />
         </div>
         
         <div className='flex items-center'>
@@ -41,20 +60,9 @@ export default function Search() {
           </div>   
         </Listbox>
         </div>
-
         </div>
+        {searchStastu && getuser != '' && <SearchFor userInfo={getuser}/>}
     </div>
   )
 }
 
-
-
-
-
-
-
- {/* Use headless UI here in future */}
-        {/* <select className='bg-none text-xs text-center weig  outline-none text-links focus:bg-none'>
-        <option className='bg-none'>Newest</option>
-        <option className='bg-none'>Oldest</option>
-        </select> */}

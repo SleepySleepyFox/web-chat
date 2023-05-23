@@ -5,7 +5,7 @@ export default function ListItem() {
   return (
     <div className='container flex items-center  mt-2 gap-2'>
         <div className='w-9 h-9 rounded-full bg-red-500 flex-shrink-0'>
-          <img src={`${auth.currentUser?.photoURL}`} alt="" className='w-9 h-9 rounded-full flex-shrink-0' />
+          {<img src={`${auth.currentUser?.photoURL}`} alt="" className='w-9 h-9 rounded-full flex-shrink-0' />}
         </div>
         
         <div>

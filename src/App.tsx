@@ -1,5 +1,5 @@
 import React from "react";
-import Search from "./components/Search";
+import Search from "./components/Search/Search";
 import List from "./components/List/List";
 import ChatRoom from "./components/ChatRoom/ChatRoom";
 import Auth from "./components/Auth";
@@ -10,7 +10,7 @@ export default function App() {
 
   return (
     // NOTE: Seatch.tsx - убрать math.random() из listItme
-    // 
+    // NOTE: Реализовать авторизацию через Route
     <div className="h-screen">
       {!user ? (
         <Auth />
