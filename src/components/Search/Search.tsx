@@ -81,7 +81,7 @@ export default function Search() {
           </Listbox>
         </div>
       </div>
-      {searchStastu && user.name != "" && getuser != '' && <SearchFor userName={user.name} photoURL={user.photoURL} />}
+      {searchStastu && user.name === getuser ? <SearchFor userName={user.name} photoURL={user.photoURL} show = {true}/> : searchStastu && <SearchFor userName={getuser} show = {false} />}
     </div>
   );
 }
