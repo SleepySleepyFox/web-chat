@@ -11,7 +11,7 @@ export default function Search() {
   const [getuser, setGetUser] = useState("");
   const options = [{ sortBy: "Newest" }, { sortBy: "Olderst" }];
   const [sort, setSort] = useState(options[0]);
-  const [user, setUser] = useState<User>({ name: "", photoURL: "" });
+  const [user, setUser] = useState<User>({ name: " ", photoURL: "" });
   interface User {
     name: string;
     photoURL: string;
