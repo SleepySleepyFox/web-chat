@@ -5,16 +5,23 @@ import { auth, db } from "../../firebase";
 import SearchFor from "./SearchFor";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import List from "../List/List";
+import { useAppSelector, useAppDispatch } from '../../app/hooks'
+import { getData, setData } from "../../features/MoveData";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Search() {
   const [searchStastu, setSearchStatus] = useState(false);
   const [getuser, setGetUser] = useState("");
   const options = [{ sortBy: "Newest" }, { sortBy: "Olderst" }];
   const [sort, setSort] = useState(options[0]);
-  const [user, setUser] = useState<User>({ name: " ", photoURL: "" });
+  const [user, setUser] = useState<User[]>([{ name: " ", photoURL: "", uId: "" }]); //name field needs to contain " " default 
+
+  const dispatch = useAppDispatch()
+
   interface User {
     name: string;
     photoURL: string;
+    uId: string;
   }
 
   const usersRef = collection(db, "users");
@@ -23,11 +30,12 @@ export default function Search() {
   async function getDocuments() {
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
-      setUser({
+      setUser(k => [ 
+      {
         name: doc.get("uName"),
         photoURL: doc.get("PhotoURL"),
-      });
+        uId: doc.get('uID')
+      }]);
     });
   }
   getDocuments();
@@ -35,12 +43,20 @@ export default function Search() {
   function logOut() {
     signOut(auth)
       .then(() => {
-        console.log("Sign-out successful.");
       })
       .catch((error) => {
         console.log("Sign Out Error: ", error);
       });
   }
+
+  const display = user.map(e => (
+    <div onClick={() => dispatch(setData(e.uId))}>
+      {searchStastu && e.name === getuser ? 
+      <div><SearchFor userName={e.name} photoURL={e.photoURL} id={e.uId} show = {true} /></div>
+      : searchStastu && <div><SearchFor userName={getuser} show = {false} /></div>
+      }
+    </div>
+  ))
 
   return (
     <div className="container flex justify-center flex-col max-w-full px-2">
@@ -54,8 +70,8 @@ export default function Search() {
         />
         <input
           className=" rounded-xl w-full bg-transparent outline-none"
-          onFocus={() => setSearchStatus((e) => !e)}
-          onBlur={() => setSearchStatus((e) => !e)}
+          onClick={() => setSearchStatus((e) => !e)}
+          onBlur={() => getuser === '' && setSearchStatus((e) => !e)}
           onChange={(e) => setGetUser(e.target.value)}
         />
       </div>
@@ -69,10 +85,9 @@ export default function Search() {
               <Listbox.Button>
                 <span className="text-links text:sm">{sort.sortBy}</span>
               </Listbox.Button>
-              {/* Не забыть убрать псевдорандом из ключей */}
               <Listbox.Options className="absolute left-10 mt-1 text-center  w-28 overflow-auto rounded-md backdrop-blur-md py-1 text-base shadow-lg ring-1 ring-gray-200 ring-opacity-5 focus:outline-none sm:text-sm">
                 {options.map((e) => (
-                  <Listbox.Option value={e} key={Math.random()}>
+                  <Listbox.Option value={e} key={uuidv4()}>
                     {e.sortBy}
                   </Listbox.Option>
                 ))}
@@ -81,7 +96,7 @@ export default function Search() {
           </Listbox>
         </div>
       </div>
-      {searchStastu && user.name === getuser ? <SearchFor userName={user.name} photoURL={user.photoURL} show = {true}/> : searchStastu && <SearchFor userName={getuser} show = {false} />}
+      {display}
     </div>
   );
 }

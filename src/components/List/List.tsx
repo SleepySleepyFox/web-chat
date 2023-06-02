@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import ListItem from './ListItem'
 import { auth } from "../../firebase";
-import { collection, where, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, where, getDocs, query } from "firebase/firestore";
 import { db } from "../../firebase";
-import { getAuth } from "firebase/auth";
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import { DocumentData } from "@firebase/firestore-types";
+import { store } from "../../app/store";
+import { useAppSelector, useAppDispatch } from '../../app/hooks'
+import { getData, setData } from "../../features/MoveData";
+import { v4 as uuidv4 } from 'uuid';
+
+
+
 
 
 export default function List() {
@@ -19,10 +23,14 @@ export default function List() {
     sentBy: string,
     text: string,
     timestamp: string
+    pfp: string,
+    chatName: string
   }
   const [chatN, setChatN] = useState<CHAT_NAME[]>([])
   const[userChat, setUserChats] = useState<USER_CHATS[]>([])
   
+  const dispatch = useAppDispatch()
+
   if(auth.currentUser?.displayName != null || undefined){
     const Ref = collection(db, 'chats')
     const q = query(Ref, where(String(auth.currentUser?.displayName), '==', auth.currentUser?.uid))
@@ -33,35 +41,40 @@ export default function List() {
       for(let i = 0; i <= chatN.length; i++){
         const querySnapshot = await getDocs(collection(db, `${chatN[i]}`))
         querySnapshot.forEach((doc) => {
-          console.log(doc.id, " => ", doc.data())
           setUserChats(k => [...k, {
             sentBy: doc.get('sentBy'),
             text: doc.get('text'),
-            timestamp: doc.get('timestamp')
-          }])
-        });
+            timestamp: doc.get('timestamp'),
+            pfp: doc.get('pfp'),
+            chatName: `${chatN[i]}`
+          }]) 
+        });  
       }
     }
-
+    
     useEffect(() => {
       chats?.map(e => {
         setChatN(k => [...k, e.chatName])
       })
     }, [chats])
-   
+    
     useEffect(() => {
-     getChatRooms()
+      getChatRooms()
     }, [chatN])
   }
-    
-    // if sentBy field != currentUserUid => get User pfp
- console.log('Chat info: ', userChat);
 
- const display = userChat.map(e => (
-  <ListItem 
-    text = {e.text}
-    sentBy = {e.sentBy}
-  />
+ const display = auth.currentUser?.uid != undefined && userChat.map(e => (
+  <div 
+    key = {uuidv4()} 
+    onClick={() => dispatch(getData())}>
+      <ListItem
+      text = {e.text}
+      sentBy = {e.sentBy}
+      pfp = {e.pfp}
+      chatName = {e.chatName}
+      otherUserId = {e.chatName.replace(String(auth.currentUser?.uid), '')}
+      />
+  </div>
  ))
 return (
     <div className='max-w-full max-h-screen px-2 md:m-0 '>
